@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Swordman : Operator
@@ -13,7 +12,6 @@ public class Swordman : Operator
 
         if (!isDied)
         {
-            TargetSearch();
             FullCheck();
             MouseClickCheck();
         }     
@@ -35,7 +33,6 @@ public class Swordman : Operator
                 anim.SetTrigger("doSkill");
                 gameManager.soundManager.PlaySfx(0, 1.2f);
             }
-                
 
             Enemy enemyLogic = target[0].GetComponent<Enemy>();
 
@@ -60,6 +57,11 @@ public class Swordman : Operator
             yield return new WaitForSeconds(0.7f);
             curRate = 0;
             isAttacking = false;
+            if (enemyLogic.isDied)
+            {
+                target[0] = null;
+                TargetResearch();
+            }
         }
         else
         {

@@ -294,6 +294,7 @@ public class LobbyManager : MonoBehaviour
     {
         soundManager.PlaySfx(0);
         lobbySet.SetActive(true);
+        uiManager.RedDotUpdate();
         if (stagetSelectSet.activeSelf)
         {
             stagetSelectSet.SetActive(false);
@@ -419,6 +420,7 @@ public class LobbyManager : MonoBehaviour
             PlayerPrefs.SetInt(state, 1);
             PlayerPrefs.SetInt(count, maxCount);
         }
+        uiManager.MissionUIUpdate();
     }
 
     public void Cheat_OperUpgradeReset()

@@ -70,7 +70,7 @@ public class Archer : Operator
         }
     }
 
-    new protected void TargetSearch()
+    protected void TargetSearch()
     {
         if (target[0] != null)
             return;

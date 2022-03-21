@@ -154,15 +154,21 @@ public class Operator : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D coll)
     {
+        if (type == Type.Range) return;
+
         switch (coll.gameObject.tag)
         {
             case "Enemy":
-                if (nowStop < canStop)
-                {
-                    nowStop++;
-                }
-                else
-                {
+                for (int i = 0; i < target.Length; i++)
+                    if (coll.gameObject == target[i])
+                        return;
+
+                Enemy enemyLogic = coll.gameObject.GetComponent<Enemy>();
+                if (!enemyLogic.isDied)
+                    SetTarget(coll.gameObject);
+
+                if (isFulled)
+                { 
                     if(!coll.gameObject.GetComponent<Enemy>().isDied)
                         temp.Add(coll.gameObject);
                 }
@@ -170,8 +176,29 @@ public class Operator : MonoBehaviour
         }
     }
 
+    void OnTriggerStay2D(Collider2D coll)
+    {
+        if (type == Type.Range) return;
+
+        switch (coll.gameObject.tag)
+        {
+            case "Enemy":
+                for (int i = 0; i < target.Length; i++)
+                    if (coll.gameObject == target[i])
+                        return;
+
+                Enemy enemyLogic = coll.gameObject.GetComponent<Enemy>();
+                if (!enemyLogic.isDied)
+                    SetTarget(coll.gameObject);
+
+                break;
+        }
+    }
+
     void OnTriggerExit2D(Collider2D coll)
     {
+        if (type == Type.Range) return;
+
         switch (coll.gameObject.tag)
         {
             case "Enemy":
@@ -198,17 +225,36 @@ public class Operator : MonoBehaviour
         }
     }
 
-    protected void TargetSearch()
+    //protected void TargetSearch()
+    //{
+    //    Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
+    //    if (cols.Length > 0)
+    //    {
+    //        for(int i = 0; i < cols.Length; i++)
+    //        {
+    //            Enemy enemyLogic = cols[i].gameObject.GetComponent<Enemy>();
+    //            if(!enemyLogic.isDied)
+    //                SetTarget(cols[i].gameObject);
+    //        }
+    //    }
+    //}
+
+    public void SetTarget(GameObject obj)
     {
-        Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
-        if (cols.Length > 0)
+        for (int i = 0; i < canStop; i++)
         {
-            for(int i = 0; i < cols.Length; i++)
+            if (target[i] == null)
             {
-                Enemy enemyLogic = cols[i].gameObject.GetComponent<Enemy>();
-                if(!enemyLogic.isDied)
-                    SetTarget(cols[i].gameObject);
+                Enemy enemyLogic = obj.GetComponent<Enemy>();
+                if (!enemyLogic.isBlocked)
+                {
+                    enemyLogic.isBlocked = true;
+                    target[i] = obj;
+                    break;
+                }
             }
+            else
+                continue;
         }
     }
 
@@ -244,6 +290,12 @@ public class Operator : MonoBehaviour
 
     protected void FullCheck()
     {
+        int count = 0;
+        foreach(var obj in target)
+            if (obj != null)
+                count++;
+
+        nowStop = count;
         isFulled = nowStop >= canStop ? true : false;
     }
 
@@ -254,7 +306,6 @@ public class Operator : MonoBehaviour
             if (target[i] != null)
             {
                 Enemy enemyLogic = target[i].GetComponent<Enemy>();
-                enemyLogic.isTargeted = false;
                 enemyLogic.isBlocked = false;
             }
         }
@@ -293,25 +344,6 @@ public class Operator : MonoBehaviour
 
         yield return new WaitForSeconds(2.9f);
         gameObject.SetActive(false);
-    }
-
-    public void SetTarget(GameObject obj)
-    {
-        for(int i = 0; i < canStop; i++)
-        {
-            if (target[i] == null)
-            {
-                Enemy enemyLogic = obj.GetComponent<Enemy>();
-                if(!enemyLogic.isTargeted)
-                {
-                    enemyLogic.isTargeted = true;
-                    target[i] = obj;
-                    break;
-                }
-            }
-            else
-                continue;
-        }
     }
     
     protected void MouseClickCheck()

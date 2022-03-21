@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Defender : Operator
@@ -13,7 +12,6 @@ public class Defender : Operator
 
         if (!isDied)
         {
-            TargetSearch();
             FullCheck();
             SkillPoint();
             MouseClickCheck();

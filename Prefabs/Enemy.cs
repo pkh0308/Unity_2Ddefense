@@ -19,7 +19,6 @@ public class Enemy : MonoBehaviour
 
     public bool isAttacking;
     public bool isDied;
-    public bool isTargeted;
     public bool isBlocked;
  
     GameObject hpBar;
@@ -63,7 +62,6 @@ public class Enemy : MonoBehaviour
 
         isAttacking = false;
         isDied = false;
-        isTargeted = false;
         isBlocked = false;
     }
 
@@ -197,8 +195,8 @@ public class Enemy : MonoBehaviour
         else
         {
             target = null;
-            isTargeted = false;
             isAttacking = false;
+            Debug.Log("타겟 해제");
         }
     }
 
@@ -211,7 +209,6 @@ public class Enemy : MonoBehaviour
             {
                 StopCoroutine(Attack());
                 isAttacking = false;
-                isTargeted = false;
                 isBlocked = false;
                 target = null;
             }
@@ -232,7 +229,7 @@ public class Enemy : MonoBehaviour
     public void SetTarget(GameObject obj)
     {
         Operator operLogic = obj.GetComponent<Operator>();
-        if (target == null && isTargeted && !operLogic.isDied)
+        if (target == null && !operLogic.isFulled && !operLogic.isDied)
             target = obj;
         else
             return;
@@ -269,11 +266,7 @@ public class Enemy : MonoBehaviour
         }
         else if (coll.gameObject.tag == "Operator")
         {
-            SetTarget(coll.gameObject);
-            if (!isBlocked && isTargeted)
-            {
-                isBlocked = true;
-            }
+            OnEncounter(coll);
         }
     }
 
@@ -281,12 +274,17 @@ public class Enemy : MonoBehaviour
     {
         if (coll.gameObject.tag == "Operator")
         {
-            SetTarget(coll.gameObject);
-            if (!isBlocked && isTargeted)
-            {
-                isBlocked = true;
-            }
+            OnEncounter(coll);
         }
     }
 
+    protected void OnEncounter(Collider2D coll)
+    {
+        SetTarget(coll.gameObject);
+        Operator operLogic = coll.GetComponent<Operator>();
+        if (!isBlocked && !operLogic.isFulled)
+        {
+            isBlocked = true;
+        }
+    }
 }

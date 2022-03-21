@@ -227,26 +227,7 @@ public class GameManager : MonoBehaviour
         //OperLimit Update
         maxOperText.text = "배치 가능한 인원 : " + (stageMaxOper - curOper);
 
-        //Selected oper set
-        if(selectedOper != null)
-        {
-            selectedOperHPBar.rectTransform.localScale = new Vector3(selectedOper.health / selectedOper.maxHealth, 1, 1);
-            selectedOperHP.text = selectedOper.health.ToString() + " / " + selectedOper.maxHealth.ToString();
-            selectedOperAtk.text = "공격력 " + selectedOper.AttackPower.ToString() + "    방어력 " + selectedOper.DefensePower.ToString();
-            selectedOperCS.text = "저지 " + selectedOper.canStop.ToString();
-
-            if (selectedOper.sp < selectedOper.maxSp)
-            {
-                SkillGuage.rectTransform.localScale = new Vector3(1, selectedOper.sp / selectedOper.maxSp, 1);
-                selectedOperSkillIcon.color = new Color(0.3f, 0.3f, 0.3f, 1);
-            }               
-            else
-            {
-                SkillGuage.rectTransform.localScale = new Vector3(1, 0, 1);
-                selectedOperSkillIcon.color = new Color(1, 1, 1, 1);
-            }
-        }
-
+        //Oper Click
         if(selectedOper != null && selectedOper.isDied)
         {
             OperClick(selectedOper);
@@ -502,12 +483,16 @@ public class GameManager : MonoBehaviour
                 string skillNum = "skill" + selectedOper.skillNum.ToString();
                 img.sprite = Resources.Load<Sprite>(skillNum) as Sprite;
             }
-            attackRange = objManager.MakeObj("attackRange");
-            float operRange = selectedOper.GetComponent<Operator>().attackRange * 1.8f;
-            attackRange.transform.localScale = new Vector3(operRange, operRange, 1);
-            attackRange.transform.position = selectedOper.transform.position;
 
             Operator operLogic = selectedOper.GetComponent<Operator>();
+            if(operLogic.type == Operator.Type.Range)
+            {
+                attackRange = objManager.MakeObj("attackRange");
+                float operRange = selectedOper.GetComponent<Operator>().attackRange * 1.8f;
+                attackRange.transform.localScale = new Vector3(operRange, operRange, 1);
+                attackRange.transform.position = selectedOper.transform.position;
+            }
+
             switch(operLogic.skillType)
             {
                 case Operator.SkillType.Active:
@@ -529,6 +514,25 @@ public class GameManager : MonoBehaviour
             skillNameText.text = skillDataDictionary[operLogic.skillNum][0];
             skillDescriptionText.text = skillDataDictionary[operLogic.skillNum][1];
 
+            if (selectedOper != null)
+            {
+                selectedOperHPBar.rectTransform.localScale = new Vector3(selectedOper.health / selectedOper.maxHealth, 1, 1);
+                selectedOperHP.text = selectedOper.health.ToString() + " / " + selectedOper.maxHealth.ToString();
+                selectedOperAtk.text = "공격력 " + selectedOper.AttackPower.ToString() + "    방어력 " + selectedOper.DefensePower.ToString();
+                selectedOperCS.text = selectedOper.type == Operator.Type.Melee ? "저지 " + selectedOper.canStop.ToString() : "저지 0";
+
+                if (selectedOper.sp < selectedOper.maxSp)
+                {
+                    SkillGuage.rectTransform.localScale = new Vector3(1, selectedOper.sp / selectedOper.maxSp, 1);
+                    selectedOperSkillIcon.color = new Color(0.3f, 0.3f, 0.3f, 1);
+                }
+                else
+                {
+                    SkillGuage.rectTransform.localScale = new Vector3(1, 0, 1);
+                    selectedOperSkillIcon.color = new Color(1, 1, 1, 1);
+                }
+            }
+
             TimeControl(0.3f);
             operInfoSet.SetActive(true);
             operSelectSet.transform.position = Camera.main.WorldToScreenPoint(oper.gameObject.transform.position);
@@ -543,7 +547,8 @@ public class GameManager : MonoBehaviour
         selectedOper = null;
         operInfoSet.SetActive(false);
         operSelectSet.SetActive(false);
-        attackRange.SetActive(false);
+        if(attackRange!= null)
+            attackRange.SetActive(false);
         soundManager.SetVolume(1.0f);
     }
 

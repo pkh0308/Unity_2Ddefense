@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Tilemaps;
 using UnityEngine.EventSystems;
@@ -40,6 +38,8 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         operLogic = oper.GetComponent<Operator>();
     }
 
+    // UI 갱신
+    // 배치 코스트가 모자랄 경우 비활성화, 충분할 경우 활성화
     void Update()
     {
         if(gameManager.CanOperSpawn(cost))
@@ -54,9 +54,11 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
 
     public void OnBeginDrag(PointerEventData data)
     {
+        // 일시정지 중이거나 코스트가 모자랄 경우 미동작
         if (gameManager.isPaused || !gameManager.CanOperSpawn(cost))
             return;
 
+        // 드래그 중 감속, 해당 오퍼 이미지 생성
         gameManager.TimeControl(0.3f);
         switch(operLogic.operID)
         {
@@ -77,6 +79,7 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         dragImgLogic.color = new Color(1, 1, 1, 0.4f);
         dragImgLogic.rectTransform.position = data.position;
 
+        // 오퍼 타입에 따라 타일셋 활성화, 원거리일 경우 공격범위 표시 생성
         switch (type)
         {
             case Operator.Type.Melee:
@@ -86,11 +89,11 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             case Operator.Type.Range:
                 upperGnd.SetActive(true);
                 tileMap = upperGnd.GetComponent<Tilemap>();
+                attackRange = objManager.MakeObj("attackRange");
+                float operRange = operLogic.attackRange * 1.8f;
+                attackRange.transform.localScale = new Vector3(operRange, operRange, 1);
                 break;
         }
-        attackRange = objManager.MakeObj("attackRange");
-        float operRange = operLogic.attackRange * 1.8f;
-        attackRange.transform.localScale = new Vector3(operRange, operRange, 1);
     }
 
     public void OnDrag(PointerEventData data)
@@ -110,15 +113,21 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             if(tileMap.GetTile(cellPos) != null)
             {
                 dragImg.transform.position = screenPos;
-                attackRange.transform.position = roundedPos;
-                if(!attackRange.activeSelf)    
-                    attackRange.SetActive(true);
+                if(operLogic.type == Operator.Type.Range)
+                {
+                    attackRange.transform.position = roundedPos;
+                    if (!attackRange.activeSelf)
+                        attackRange.SetActive(true);
+                }
             }
             else
             {
                 dragImg.transform.position = data.position;
-                if (attackRange.activeSelf)
-                    attackRange.SetActive(false);
+                if (operLogic.type == Operator.Type.Range)
+                {
+                    if (attackRange.activeSelf)
+                        attackRange.SetActive(false);
+                }
             }
         }
     }
@@ -133,9 +142,10 @@ public class OperDrag : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
             gameManager.TimeControl(0.0f);
             Drop();
             dragImg.SetActive(false);
-            attackRange.SetActive(false);
             upperGnd.SetActive(false);
             lowerGnd.SetActive(false);
+            if (operLogic.type == Operator.Type.Range)
+                attackRange.SetActive(false);
         }
     }
 

@@ -22,10 +22,10 @@ public class MissionData : MonoBehaviour
 
     public void GetData(int[] data)
     {
-        this.curState = data[2];
-        this.count = data[3];
-        this.maxCount = data[4];
-        this.rewardId = data[5];
-        this.rewardNum = data[6];
+        curState = data[2];
+        count = data[3];
+        maxCount = data[4];
+        rewardId = data[5];
+        rewardNum = data[6];
     }
 }

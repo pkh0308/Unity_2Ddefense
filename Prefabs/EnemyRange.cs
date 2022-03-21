@@ -57,8 +57,6 @@ public class EnemyRange : Enemy
             {
                 StopCoroutine(Attack());
                 isAttacking = false;
-                isTargeted = false;
-                isBlocked = false;
                 target = null;
             }
         }

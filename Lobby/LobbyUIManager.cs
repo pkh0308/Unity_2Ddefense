@@ -24,6 +24,9 @@ public class LobbyUIManager : MonoBehaviour
     public GameObject upgradeFailedSet;
     public GameObject optionSet;
 
+    public GameObject missionRedDot;
+    public Text missionRedDotText;
+
     public Text accountLevel;
     public Image accountExpBar;
 
@@ -83,6 +86,7 @@ public class LobbyUIManager : MonoBehaviour
         ShopUpdate();
         MissionDataUpdate();
         OperatorUpgradeUpdate();
+        RedDotUpdate();
     }
     
     // 상점, 재화 관련
@@ -126,6 +130,25 @@ public class LobbyUIManager : MonoBehaviour
     {
         accountLevel.text = "Lv." + string.Format("{0:n0}", level);
         accountExpBar.rectTransform.localScale = new Vector3(exp, 1, 1);
+    }
+
+    // 레드닷 갱신
+    public void RedDotUpdate()
+    {
+        // 미션
+        int missionCnt = 0;
+        for (int i = 0; i < missionsPos.Length; i++)
+        {
+            if (missions[i].GetComponent<MissionData>().curState == 1)
+                missionCnt++;
+        }
+        if (missionCnt > 0)
+        {
+            missionRedDotText.text = string.Format("{0:n0}", missionCnt);
+            missionRedDot.SetActive(true);
+        }
+        else
+            missionRedDot.SetActive(false);
     }
 
     // 미션 관련
