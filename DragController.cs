@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -7,6 +5,9 @@ public class DragController : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 {
     public Vector3 originPos;
     public Vector3 limitPos;
+    public int endPosOffset;
+    Vector3 originEndPos;
+    Vector3 limitEndPos;
     Vector3 startPos;
     Vector2 anchoredSartPos;
     RectTransform rectTransform;
@@ -16,6 +17,17 @@ public class DragController : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
     void Start()
     {
         rectTransform = GetComponent<RectTransform>();
+        switch (dragType)
+        {
+            case DragType.Horizontal:
+                originEndPos = originPos + Vector3.right * endPosOffset;
+                limitEndPos = limitPos - Vector3.right * endPosOffset;
+                break;
+            case DragType.Vertical:
+                originEndPos = originPos - Vector3.up * endPosOffset;
+                limitEndPos = limitPos + Vector3.up * endPosOffset;
+                break;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -26,16 +38,31 @@ public class DragController : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     public void OnDrag(PointerEventData eventData)
     {
-        float offset = 0;
+        float offset;
+        Vector3 curPos;
         switch (dragType)
         {
             case DragType.Horizontal:
                 offset = eventData.position.x - startPos.x;
-                rectTransform.anchoredPosition = anchoredSartPos + Vector2.right * offset;
+                curPos = anchoredSartPos + Vector2.right * offset;
+
+                if (curPos.x > originEndPos.x)
+                    rectTransform.anchoredPosition = originEndPos;
+                else if (curPos.x < limitEndPos.x)
+                    rectTransform.anchoredPosition = limitEndPos;
+                else
+                    rectTransform.anchoredPosition = curPos;
                 break;
             case DragType.Vertical:
                 offset = eventData.position.y - startPos.y;
-                rectTransform.anchoredPosition = anchoredSartPos + Vector2.up * offset;
+                curPos = anchoredSartPos + Vector2.up * offset;
+
+                if (curPos.y < originEndPos.y)
+                    rectTransform.anchoredPosition = originEndPos;
+                else if (curPos.y > limitEndPos.y)
+                    rectTransform.anchoredPosition = limitEndPos;
+                else
+                    rectTransform.anchoredPosition = curPos;
                 break;
         }
     }
