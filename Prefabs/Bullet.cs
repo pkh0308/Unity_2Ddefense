@@ -31,6 +31,9 @@ public class Bullet : MonoBehaviour
         {
             transform.position = Vector3.MoveTowards(transform.position, _target.transform.position, arrowSpeed * Time.deltaTime);
         }
+
+        if (!_target.activeSelf)
+            gameObject.SetActive(false);
     }
 
     public void SetTarget(GameObject target, float attackPower)
@@ -55,6 +58,7 @@ public class Bullet : MonoBehaviour
         transform.Rotate(rotationVec);
     }
 
+    // 충돌 대상이 타겟일 경우 피격 함수 호출
     void OnTriggerEnter2D(Collider2D collider)
     {
         if(collider.gameObject == _target)
@@ -68,6 +72,8 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    // 두 좌표 간의 각도 계산(arctan)
+    // x좌표의 차이가 0일 경우 0.01로 대체
     float GetAngle(Vector3 pos1, Vector3 pos2)
     {
         float x = Mathf.Abs(pos1.x - pos2.x);

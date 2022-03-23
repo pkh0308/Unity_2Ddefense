@@ -91,6 +91,11 @@ public class DirectionArrow : MonoBehaviour
                     range.transform.position = spawnSpot;
                     enemyLogic = range.GetComponent<Enemy>();
                     break;
+                case 90003:
+                    GameObject flying = objManager.MakeObj("enemyFlying");
+                    flying.transform.position = spawnSpot;
+                    enemyLogic = flying.GetComponent<Enemy>();
+                    break;
             }
             enemyLogic.Initialize();
             enemyLogic.SetDirections(vecs);

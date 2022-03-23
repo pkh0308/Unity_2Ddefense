@@ -1,7 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
-public class EnemyRange : Enemy
+public class EnemyFlying : Enemy
 {
     void Update()
     {

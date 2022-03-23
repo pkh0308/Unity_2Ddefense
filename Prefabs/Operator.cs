@@ -243,18 +243,18 @@ public class Operator : MonoBehaviour
     {
         for (int i = 0; i < canStop; i++)
         {
-            if (target[i] == null)
-            {
-                Enemy enemyLogic = obj.GetComponent<Enemy>();
-                if (!enemyLogic.isBlocked)
-                {
-                    enemyLogic.isBlocked = true;
-                    target[i] = obj;
-                    break;
-                }
-            }
-            else
+            if (target[i] != null) continue;
+            bool flyingEnemy = (obj.tag == "EnemyFlying");
+            if (type == Type.Melee && flyingEnemy)
                 continue;
+
+            Enemy enemyLogic = obj.GetComponent<Enemy>();
+            if (!enemyLogic.isBlocked)
+            {
+                target[i] = obj;
+                if(!flyingEnemy) enemyLogic.isBlocked = true;
+                break;
+            }
         }
     }
 

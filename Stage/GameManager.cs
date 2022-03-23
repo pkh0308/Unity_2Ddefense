@@ -135,6 +135,9 @@ public class GameManager : MonoBehaviour
                     case "Range":
                         spawnData.enemyIndex = 1;
                         break;
+                    case "Flying":
+                        spawnData.enemyIndex = 2;
+                        break;
                 }
                 spawnData.spawnDelay = float.Parse(datas[2]);
 

@@ -10,6 +10,7 @@ public class ObjectManager : MonoBehaviour
 
     public GameObject enemyMeleePrefab;
     public GameObject enemyRangePrefab;
+    public GameObject enemyFlyingPrefab;
     public GameObject enemyBulletAPrefab;
     public GameObject swordmanPrefab;
     public GameObject archerPrefab;
@@ -31,6 +32,7 @@ public class ObjectManager : MonoBehaviour
 
     GameObject[] enemyMelee;
     GameObject[] enemyRange;
+    GameObject[] enemyFlying;
     GameObject[] enemyBulletA;
     GameObject[] swordman;
     GameObject[] archer;
@@ -53,11 +55,11 @@ public class ObjectManager : MonoBehaviour
     int[] status;
     GameObject[] targetPool;
 
-    // Start is called before the first frame update
     void Awake()
     {
         enemyMelee = new GameObject[30];
         enemyRange = new GameObject[30];
+        enemyFlying = new GameObject[30];
         enemyBulletA = new GameObject[50];
         swordman = new GameObject[10];
         archer = new GameObject[10];
@@ -81,6 +83,8 @@ public class ObjectManager : MonoBehaviour
         Generate();
     }
 
+    // 스테이지 로딩후 필요 개체들 미리 생성
+    // 오퍼레이터의 경우 operatorStatus 파일을 읽어와서 스테이터스 설정
     void Generate()
     {
         TextAsset operStatus = Resources.Load("operatorStatus") as TextAsset;
@@ -183,6 +187,7 @@ public class ObjectManager : MonoBehaviour
             Enemy enemyLogic = enemyMelee[idx].GetComponent<Enemy>();
             enemyLogic.SetManager(gameManager, this);
         }
+
         for (int idx = 0; idx < enemyRange.Length; idx++)
         {
             enemyRange[idx] = Instantiate(enemyRangePrefab);
@@ -194,6 +199,14 @@ public class ObjectManager : MonoBehaviour
         {
             enemyBulletA[idx] = Instantiate(enemyBulletAPrefab);
             enemyBulletA[idx].gameObject.SetActive(false);
+        }
+
+        for (int idx = 0; idx < enemyFlying.Length; idx++)
+        {
+            enemyFlying[idx] = Instantiate(enemyFlyingPrefab);
+            enemyFlying[idx].SetActive(false);
+            Enemy enemyLogic = enemyFlying[idx].GetComponent<Enemy>();
+            enemyLogic.SetManager(gameManager, this);
         }
 
         // oper
@@ -274,6 +287,9 @@ public class ObjectManager : MonoBehaviour
             case "enemyRange":
                 targetPool = enemyRange;
                 break;
+            case "enemyFlying":
+                targetPool = enemyFlying;
+                break;
             case "swordman":
                 targetPool = swordman;
                 break;
@@ -348,6 +364,9 @@ public class ObjectManager : MonoBehaviour
             case "enemyRange":
                 targetPool = enemyRange;
                 break;
+            case "enemyFlying":
+                targetPool = enemyFlying;
+                break;
             case "swordman":
                 targetPool = swordman;
                 break;
@@ -412,6 +431,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "enemyRange":
                 targetPool = enemyRange;
+                break;
+            case "enemyFlying":
+                targetPool = enemyFlying;
                 break;
             case "swordman":
                 targetPool = swordman;
@@ -479,6 +501,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "enemyRange":
                 targetPool = enemyRange;
+                break;
+            case "enemyFlying":
+                targetPool = enemyFlying;
                 break;
             case "swordman":
                 targetPool = swordman;
@@ -563,6 +588,17 @@ public class ObjectManager : MonoBehaviour
                 Animator anim = enemyRange[idx].GetComponent<Animator>();
                 anim.speed = 0.0f;
                 Enemy enemyLogic = enemyRange[idx].GetComponent<Enemy>();
+                enemyLogic.isBlocked = true;
+            }
+        }
+
+        for (int idx = 0; idx < enemyFlying.Length; idx++)
+        {
+            if (enemyFlying[idx].activeSelf)
+            {
+                Animator anim = enemyFlying[idx].GetComponent<Animator>();
+                anim.speed = 0.0f;
+                Enemy enemyLogic = enemyFlying[idx].GetComponent<Enemy>();
                 enemyLogic.isBlocked = true;
             }
         }
