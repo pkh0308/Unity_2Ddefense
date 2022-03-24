@@ -5,11 +5,14 @@ using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    public float health;
+    protected float health;
     public float maxHealth;
     public float attackPower;
     public float defensePower;
     float defenseRate;
+
+    public enum enemyType { Melee, Range, Flying }
+    public enemyType type;
 
     public float speed;
     public float fireRate;
@@ -280,6 +283,8 @@ public class Enemy : MonoBehaviour
 
     protected void OnEncounter(Collider2D coll)
     {
+        if (type != enemyType.Melee) return;
+
         SetTarget(coll.gameObject);
         Operator operLogic = coll.GetComponent<Operator>();
         if (!isBlocked && !operLogic.isFulled)
