@@ -29,6 +29,7 @@ public class ObjectManager : MonoBehaviour
     public GameObject defenderIconPrefab;
     public GameObject skillActivatedIconPrefab;
     public GameObject attackRangePrefab;
+    public GameObject flyingShadePrefab;
 
     GameObject[] enemyMelee;
     GameObject[] enemyRange;
@@ -51,6 +52,7 @@ public class ObjectManager : MonoBehaviour
     GameObject[] defenderIcon;
     GameObject[] skillActivatedIcon;
     GameObject[] attackRange;
+    GameObject[] flyingShade;
 
     int[] status;
     GameObject[] targetPool;
@@ -78,6 +80,7 @@ public class ObjectManager : MonoBehaviour
         defenderIcon = new GameObject[10];
         skillActivatedIcon = new GameObject[50];
         attackRange = new GameObject[10];
+        flyingShade = new GameObject[30];
 
         status = new int[12];
         Generate();
@@ -178,6 +181,11 @@ public class ObjectManager : MonoBehaviour
             attackRange[idx] = Instantiate(attackRangePrefab);
             attackRange[idx].gameObject.SetActive(false);
         }
+        for (int idx = 0; idx < flyingShade.Length; idx++)
+        {
+            flyingShade[idx] = Instantiate(flyingShadePrefab);
+            flyingShade[idx].gameObject.SetActive(false);
+        }
 
         // emeny
         for (int idx = 0; idx < enemyMelee.Length; idx++)
@@ -207,6 +215,7 @@ public class ObjectManager : MonoBehaviour
             enemyFlying[idx].SetActive(false);
             Enemy enemyLogic = enemyFlying[idx].GetComponent<Enemy>();
             enemyLogic.SetManager(gameManager, this);
+            enemyLogic.SetShade(flyingShade[idx]);
         }
 
         // oper
@@ -341,6 +350,9 @@ public class ObjectManager : MonoBehaviour
             case "knuckbackShot":
                 targetPool = knuckbackShot;
                 break;
+            case "flyingShade":
+                targetPool = flyingShade;
+                break;
         }
 
         for (int idx = 0; idx < targetPool.Length; idx++)
@@ -418,6 +430,9 @@ public class ObjectManager : MonoBehaviour
             case "knuckbackShot":
                 targetPool = knuckbackShot;
                 break;
+            case "flyingShade":
+                targetPool = flyingShade;
+                break;
         }
         return targetPool;
     }
@@ -485,6 +500,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "knuckbackShot":
                 targetPool = knuckbackShot;
+                break;
+            case "flyingShade":
+                targetPool = flyingShade;
                 break;
         }
         return targetPool[0];
@@ -555,6 +573,9 @@ public class ObjectManager : MonoBehaviour
                 break;
             case "knuckbackShot":
                 targetPool = knuckbackShot;
+                break;
+            case "flyingShade":
+                targetPool = flyingShade;
                 break;
         }
 

@@ -97,7 +97,7 @@ public class DirectionArrow : MonoBehaviour
                     enemyLogic = flying.GetComponent<Enemy>();
                     break;
             }
-            enemyLogic.Initialize();
+            enemyLogic.SetHpUI();
             enemyLogic.SetDirections(vecs);
             gameObject.SetActive(false);
         }

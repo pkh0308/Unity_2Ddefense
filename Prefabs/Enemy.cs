@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
     Image hpLogic;
 
     public GameObject target;
+    protected GameObject shade;
     protected Animator anim;
     protected GameManager gameManager;
     protected ObjectManager objManager;
@@ -66,9 +67,12 @@ public class Enemy : MonoBehaviour
         isAttacking = false;
         isDied = false;
         isBlocked = false;
+        if (shade != null)  shade.SetActive(true);
     }
 
-    public void Initialize()
+    // enemy와 hp UI 연결
+    // DirectionArrow 에서 호출해서 사용
+    public void SetHpUI()
     {
         if (objManager != null)
         {
@@ -281,6 +285,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // 오퍼레이터와 충돌 시 처리
+    // Melee 타입일 경우 충돌 대상을 타겟 설정(조건 검사는 SetTarget에서 실행)
+    // 자신이 block 상태가 아니고, 타겟 오퍼가 최대 저지중이 아니라면 자신을 block
     protected void OnEncounter(Collider2D coll)
     {
         if (type != enemyType.Melee) return;
@@ -291,5 +298,13 @@ public class Enemy : MonoBehaviour
         {
             isBlocked = true;
         }
+    }
+
+    // 그림자 개체 연결
+    public void SetShade(GameObject obj)
+    {
+        shade = obj;
+        shade.transform.position = transform.position + Vector3.down * 0.4f;
+        shade.transform.SetParent(transform);
     }
 }
