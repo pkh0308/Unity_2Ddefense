@@ -561,8 +561,8 @@ public class GameManager : MonoBehaviour
         curCost += selectedOper.SpawnCost;
         TileControl(selectedOper.transform.position, selectedOper.type);
         selectedOper.OperUiOff(false);
-        GameObject oper = selectedOper.gameObject;
-        oper.SetActive(false);
+        selectedOper.isDied = true;
+        selectedOper.gameObject.SetActive(false);
 
         selectedOper.TargetClear();
         OperClick(selectedOper);

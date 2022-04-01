@@ -152,6 +152,8 @@ public class Operator : MonoBehaviour
         }
     }
 
+    // 적과 충돌 시 타겟으로 설정
+    // 최대 저지 중일 경우 temp에 저장
     void OnTriggerEnter2D(Collider2D coll)
     {
         if (type == Type.Range) return;
@@ -195,6 +197,7 @@ public class Operator : MonoBehaviour
         }
     }
 
+    // 최대 저지 상태라 통과하는 경우 temp에 쌓여있는 타겟 제거
     void OnTriggerExit2D(Collider2D coll)
     {
         if (type == Type.Range) return;
@@ -225,20 +228,6 @@ public class Operator : MonoBehaviour
         }
     }
 
-    //protected void TargetSearch()
-    //{
-    //    Collider2D[] cols = Physics2D.OverlapCircleAll(transform.position, attackRange, LayerMask.GetMask("Enemy"));
-    //    if (cols.Length > 0)
-    //    {
-    //        for(int i = 0; i < cols.Length; i++)
-    //        {
-    //            Enemy enemyLogic = cols[i].gameObject.GetComponent<Enemy>();
-    //            if(!enemyLogic.isDied)
-    //                SetTarget(cols[i].gameObject);
-    //        }
-    //    }
-    //}
-
     public void SetTarget(GameObject obj)
     {
         for (int i = 0; i < canStop; i++)
@@ -258,6 +247,8 @@ public class Operator : MonoBehaviour
         }
     }
 
+    // 타겟이 사망한 경우 한칸씩 당겨옴
+    // temp에 저장된 적이 있을 경우 타겟으로 당겨옴
     protected void TargetResearch()
     {
         for (int i = 0; i < canStop - 1; i++)
@@ -288,6 +279,7 @@ public class Operator : MonoBehaviour
         }
     }
 
+    // 현재 저지 수 체크
     protected void FullCheck()
     {
         int count = 0;
@@ -299,6 +291,8 @@ public class Operator : MonoBehaviour
         isFulled = nowStop >= canStop ? true : false;
     }
 
+    // 오퍼레이터 퇴각 시 호출
+    // 타겟으로 삼은 적들의 block 상태 해제
     public void TargetClear()
     {
         for (int i = 0; i < canStop; i++)
