@@ -3,6 +3,12 @@ using UnityEngine.EventSystems;
 
 public class DragController : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler
 {
+    /*
+    드래그 필요한 UI에 적용하기 위한 클래스(미션, 스테이지 셀렉트 화면)
+    상하 or 좌우 드래그 타입 선택하여 사용(horizontal, vertical)
+    endPosOffset : 드래그 중에 originPos, limitPos 를 넘어갈 수 있는 수치
+    */
+
     public Vector3 originPos;
     public Vector3 limitPos;
     public int endPosOffset;
@@ -72,10 +78,10 @@ public class DragController : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
         switch (dragType)
         {
             case DragType.Horizontal:
-                if (rectTransform.anchoredPosition.x < originPos.x)
-                    rectTransform.anchoredPosition = limitPos;
-                else if (rectTransform.anchoredPosition.x > limitPos.x)
+                if (rectTransform.anchoredPosition.x > originPos.x)
                     rectTransform.anchoredPosition = originPos;
+                else if (rectTransform.anchoredPosition.x < limitPos.x)
+                    rectTransform.anchoredPosition = limitPos;
                 break;
             case DragType.Vertical:
                 if (rectTransform.anchoredPosition.y < originPos.y)
