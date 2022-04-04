@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -29,6 +31,10 @@ public class LobbyUIManager : MonoBehaviour
 
     public Text accountLevel;
     public Image accountExpBar;
+    int maxEnergy;
+    int secondsPerEnergyCharging;
+    public GameObject autoChargePopup;
+    public Text remainTimeText;
 
     int[] swordmanStatus;
     int[] archerStatus;
@@ -82,6 +88,7 @@ public class LobbyUIManager : MonoBehaviour
             missionsPos[i] = missions[i].GetComponent<RectTransform>().anchoredPosition;
         }
 
+        EnergyCharge();
         GoodsUpdate();
         ShopUpdate();
         MissionDataUpdate();
@@ -115,21 +122,65 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 
+    public void EnergyCharge()
+    {
+        DateTime now = DateTime.Now;
+        TimeSpan span = now - new DateTime(2022, 4, 3, 0, 0, 0);
+        int timeGap = ((int)span.TotalSeconds - PlayerPrefs.GetInt("LastAccess")) / secondsPerEnergyCharging;
+        int remainTime = ((int)span.TotalSeconds - PlayerPrefs.GetInt("LastAccess")) % secondsPerEnergyCharging;
+        if (GoodsManager.Instance.ChargeEnergy(timeGap) == false)
+            Debug.Log("Error Occured while goods control...");
+        StartCoroutine(AutoChageEnergy(remainTime));
+
+        now = DateTime.Now;
+        span = now - new DateTime(2022, 4, 3, 0, 0, 0);
+        PlayerPrefs.SetInt("LastAccess", (int)span.TotalSeconds);
+    }
+
     public void GoodsUpdate()
     {
-        for(int i = 0; i < topBars.Length; i++)
+        for (int i = 0; i < topBars.Length; i++)
         {
             topBars[i].goldText.text = string.Format("{0:n0}", GoodsManager.Instance.Gold.ToString());
             topBars[i].gemText.text = string.Format("{0:n0}", GoodsManager.Instance.Gem.ToString());
-            topBars[i].energyText.text = string.Format("{0:n0}", GoodsManager.Instance.Energy.ToString());
+            topBars[i].energyText.text = string.Format("{0:n0}", GoodsManager.Instance.Energy.ToString() + "/" + maxEnergy);
         }
     }
 
+    // 에너지 자동 충전
+    // 현재 에너지가 최대치보다 작은 동안 루프 반복
+    // 텍스트는 팝업이 활성화 상태일때만 갱신
+    IEnumerator AutoChageEnergy(int time)
+    {
+        while(GoodsManager.Instance.Energy < maxEnergy)
+        {
+            if (autoChargePopup.activeSelf)
+            {
+                int mins = time / 60;
+                int seconds = time % 60;
+                //remainTimeText.text = mins + ":" + seconds;
+                remainTimeText.text = string.Format("{0,1} : {1,2}", mins.ToString("D1"), seconds.ToString("D2"));
+            }
+            if (time > 0) time--;
+            else
+            {
+                time = 179;
+                GoodsManager.Instance.ChargeEnergy(1);
+                GoodsUpdate();
+            }
+
+            yield return new WaitForSeconds(1.0f);
+        }
+        remainTimeText.text = "-:--";
+    }
+
     // 계정 레벨 관련
-    public void AccountLevelUpdate(int level, float exp)
+    public void AccountLevelUpdate(int level, float exp, int seconds)
     {
         accountLevel.text = "Lv." + string.Format("{0:n0}", level);
         accountExpBar.rectTransform.localScale = new Vector3(exp, 1, 1);
+        maxEnergy = GoodsManager.Instance.MaxEnergy;
+        secondsPerEnergyCharging = seconds;
     }
 
     // 레드닷 갱신
@@ -553,6 +604,14 @@ public class LobbyUIManager : MonoBehaviour
     public void UpgradeFailBtn()
     {
         upgradeFailedSet.SetActive(false);
+    }
+
+    public void AutoChagePopupBtn()
+    {
+        if (autoChargePopup.activeSelf)
+            autoChargePopup.SetActive(false);
+        else
+            autoChargePopup.SetActive(true);
     }
 
     // 환경설정

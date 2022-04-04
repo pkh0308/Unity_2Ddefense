@@ -20,9 +20,11 @@ public class GoodsManager
     private static int curGold;
     private static int curGem;
     private static int curEnergy;
+    private static int maxEnergy;
     public int Gold { get { return curGold; } }
     public int Gem { get { return curGem; } }
     public int Energy { get { return curEnergy; } }
+    public int MaxEnergy { get { return maxEnergy; } }
 
     private GoodsManager()
     {
@@ -69,6 +71,29 @@ public class GoodsManager
             default:
                 return false;
         }
+    }
+
+    public bool ChargeEnergy(int val)
+    {
+        val += curEnergy;
+        if (val < 0 || val > int.MaxValue)
+            return false;
+        else if(val > maxEnergy)
+        {
+            curEnergy = maxEnergy;
+            return true;
+        }
+        else
+        {
+            curEnergy = val;
+            SaveGoods();
+            return true;
+        }
+    }
+
+    public void SetMaxEnergy(int max)
+    {
+        maxEnergy = max;
     }
 
     public void SaveGoods()

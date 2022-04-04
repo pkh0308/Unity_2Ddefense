@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
@@ -118,7 +119,8 @@ public class LobbyManager : MonoBehaviour
             else
             {
                 float exp = (curAccountExp - beforeMaxExp) / float.Parse(datas[1]);
-                uiManager.AccountLevelUpdate(int.Parse(datas[0]), exp);
+                GoodsManager.Instance.SetMaxEnergy(int.Parse(datas[3]));
+                uiManager.AccountLevelUpdate(int.Parse(datas[0]), exp, int.Parse(datas[4]));
                 break;
             }
         }
@@ -350,11 +352,15 @@ public class LobbyManager : MonoBehaviour
         for (int i = 0; i < uiManager.missions.Length; i++)
         {
             MissionData data = uiManager.GetMissionData(i);
-            string temp = "mission" + data.missionId.ToString();
-            PlayerPrefs.SetInt(temp + "state", data.curState);
-            PlayerPrefs.SetInt(temp + "count", data.count);
+            string missionName = "mission" + data.missionId.ToString();
+            PlayerPrefs.SetInt(missionName + "state", data.curState);
+            PlayerPrefs.SetInt(missionName + "count", data.count);
         }
         soundManager.SaveVolume();
+
+        DateTime now = DateTime.Now;
+        TimeSpan span = now - new DateTime(2022, 4, 3, 0, 0, 0);
+        PlayerPrefs.SetInt("LastAccess", (int)span.TotalSeconds);
 
         PlayerPrefs.Save();
     }
@@ -445,6 +451,6 @@ public class LobbyManager : MonoBehaviour
     public void Cheat_AccountLevelReset()
     {
         PlayerPrefs.SetInt("AccountExp", 0);
-        uiManager.AccountLevelUpdate(1, 0);
+        uiManager.AccountLevelUpdate(1, 0, 180);
     }
 }
