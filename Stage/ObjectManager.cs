@@ -54,6 +54,8 @@ public class ObjectManager : MonoBehaviour
     GameObject[] attackRange;
     GameObject[] flyingShade;
 
+    public GameObject majorCanvas;
+    public GameObject minorCanvas;
     int[] status;
     GameObject[] targetPool;
 
@@ -143,37 +145,37 @@ public class ObjectManager : MonoBehaviour
         }
         for (int idx = 0; idx < hpBar.Length; idx++)
         {
-            hpBar[idx] = Instantiate(hpBarPrefab, GameObject.Find("MinorCanvas").transform);
+            hpBar[idx] = Instantiate(hpBarPrefab, minorCanvas.transform);
             hpBar[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < spBar.Length; idx++)
         {
-            spBar[idx] = Instantiate(spBarPrefab, GameObject.Find("MinorCanvas").transform);
+            spBar[idx] = Instantiate(spBarPrefab, minorCanvas.transform);
             spBar[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < swordmanIcon.Length; idx++)
         {
-            swordmanIcon[idx] = Instantiate(swordmanIconPrefab, GameObject.Find("MajorCanvas").transform);
+            swordmanIcon[idx] = Instantiate(swordmanIconPrefab, majorCanvas.transform);
             swordmanIcon[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < archerIcon.Length; idx++)
         {
-            archerIcon[idx] = Instantiate(archerIconPrefab, GameObject.Find("MajorCanvas").transform);
+            archerIcon[idx] = Instantiate(archerIconPrefab, majorCanvas.transform);
             archerIcon[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < casterIcon.Length; idx++)
         {
-            casterIcon[idx] = Instantiate(casterIconPrefab, GameObject.Find("MajorCanvas").transform);
+            casterIcon[idx] = Instantiate(casterIconPrefab, majorCanvas.transform);
             casterIcon[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < defenderIcon.Length; idx++)
         {
-            defenderIcon[idx] = Instantiate(defenderIconPrefab, GameObject.Find("MajorCanvas").transform);
+            defenderIcon[idx] = Instantiate(defenderIconPrefab, majorCanvas.transform);
             defenderIcon[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < skillActivatedIcon.Length; idx++)
         {
-            skillActivatedIcon[idx] = Instantiate(skillActivatedIconPrefab, GameObject.Find("MinorCanvas").transform);
+            skillActivatedIcon[idx] = Instantiate(skillActivatedIconPrefab, minorCanvas.transform);
             skillActivatedIcon[idx].gameObject.SetActive(false);
         }
         for (int idx = 0; idx < attackRange.Length; idx++)

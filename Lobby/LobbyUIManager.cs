@@ -51,6 +51,8 @@ public class LobbyUIManager : MonoBehaviour
 
     public ShopItemData[] shopItems;
 
+    // 저장된 오퍼레이터 스테이터스를 불러와 배열에 저장
+    // 오퍼레이터 업그레이드 화면에서 사용
     void Awake()
     {
         swordmanStatus = new int[3];
@@ -97,6 +99,8 @@ public class LobbyUIManager : MonoBehaviour
     }
     
     // 상점, 재화 관련
+
+    // 상품 정보 갱신
     void ShopUpdate()
     {
         for(int i = 0; i < shopItems.Length; i++)
@@ -122,8 +126,12 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 
+    // 마지막 저장된 시간과 현재 시간을 비교하여 에너지 자동 충전(TimeSpan.TotalSeconds 이용)
+    // 현재 에너지가 최대에너지 이상일 경우 스킵
     public void EnergyCharge()
     {
+        if (GoodsManager.Instance.Energy >= maxEnergy) return;
+
         DateTime now = DateTime.Now;
         TimeSpan span = now - new DateTime(2022, 4, 3, 0, 0, 0);
         int timeGap = ((int)span.TotalSeconds - PlayerPrefs.GetInt("LastAccess")) / secondsPerEnergyCharging;
@@ -158,9 +166,9 @@ public class LobbyUIManager : MonoBehaviour
             {
                 int mins = time / 60;
                 int seconds = time % 60;
-                //remainTimeText.text = mins + ":" + seconds;
                 remainTimeText.text = string.Format("{0,1} : {1,2}", mins.ToString("D1"), seconds.ToString("D2"));
             }
+
             if (time > 0) time--;
             else
             {
@@ -174,7 +182,7 @@ public class LobbyUIManager : MonoBehaviour
         remainTimeText.text = "-:--";
     }
 
-    // 계정 레벨 관련
+    // 계정 레벨 및 최대에너지 갱신
     public void AccountLevelUpdate(int level, float exp, int seconds)
     {
         accountLevel.text = "Lv." + string.Format("{0:n0}", level);
@@ -203,6 +211,8 @@ public class LobbyUIManager : MonoBehaviour
     }
 
     // 미션 관련
+
+
     public MissionData GetMissionData(int idx)
     {
         return missions[idx].GetComponent<MissionData>();
@@ -232,6 +242,8 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 
+    // 미션 목록을 다음과 같은 순서로 정렬
+    // 1순위 : 완료 후 보상 수령하지 않은 미션 -> 2순위 : 아직 클리어하지 않은 미션 -> 3순위 : 보상 수령까지 마친 미션
     void MissionSort()
     {
         Vector2 beforePos = Vector2.one;
@@ -293,6 +305,8 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 
+    // 모든 미션 목록 노출
+    // 이미 해당 카테고리일 경우 미동작
     public void MissionAllBtn()
     {
         if (curMissionCategory == 0) return;
@@ -310,6 +324,7 @@ public class LobbyUIManager : MonoBehaviour
         MissionSort();
     }
 
+    // 미션 카테고리가 Normal인 미션들만 활성화
     public void MissionNormalBtn()
     {
         if (curMissionCategory == 1) return;
@@ -343,6 +358,7 @@ public class LobbyUIManager : MonoBehaviour
         MissionSort();
     }
 
+    // 미션 카테고리가 Challenge인 미션들만 활성화
     public void MissionChallengeBtn()
     {
         if (curMissionCategory == 2) return;
@@ -376,6 +392,8 @@ public class LobbyUIManager : MonoBehaviour
         MissionSort();
     }
 
+    // 미션 보상 수령 버튼용 함수
+    // 현재 미션 상태가 1(완료, 보상 미수령)이 아니면 미동작 
     public void MissionCompleteBtn(MissionData data)
     {
         if (data.curState != 1) return;
@@ -392,7 +410,8 @@ public class LobbyUIManager : MonoBehaviour
         MissionManager.Instance.MissionStateSave(data.missionId, data.curState, data.count);
     }
 
-    // 오퍼 업그레이드
+    // 오퍼레이터 업그레이드 화면 갱신(전체)
+    // operatorStatus, operatorUpgradeCost 를 읽어온 뒤 Awake()에서 배열에 저장해둔 레벨값을 인덱스로 이용
     void OperatorUpgradeUpdate()
     {
         TextAsset status = Resources.Load("operatorStatus") as TextAsset;
@@ -472,6 +491,8 @@ public class LobbyUIManager : MonoBehaviour
         costReader.Close();
     }
 
+    // 오퍼레이터 업그레이드 화면 갱신(일부)
+    // 업그레이드 버튼 사용 후 갱신을 위해 호출
     void OperatorUpgradeUpdate(int operId, int idx)
     {
         int[] targetStatus = swordmanStatus;
@@ -518,6 +539,9 @@ public class LobbyUIManager : MonoBehaviour
         }
     }
 
+    // 업그레이드 버튼용 함수
+    // 재화가 충분할 경우 OperatorUpgradeUpdate(변수 2개) 호출하여 데이터 갱신
+    // 부족할 경우 실패 팝업 노출
     public void OperUpgradeBtn(UpgradeData data)
     {
         // 이미 Max일 경우 스킵

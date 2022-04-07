@@ -37,6 +37,7 @@ public class EnemyRange : Enemy
             TargetCheck();
 
             yield return new WaitForSeconds(0.7f);
+            TargetCheck();
             curRate = 0;
             isAttacking = false;
         }
@@ -44,7 +45,6 @@ public class EnemyRange : Enemy
         {
             curRate += Time.deltaTime;
             yield return null;
-            TargetCheck();
         }
     }
 
