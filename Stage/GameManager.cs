@@ -231,9 +231,21 @@ public class GameManager : MonoBehaviour
         maxOperText.text = "배치 가능한 인원 : " + (stageMaxOper - curOper);
 
         //Oper Click
-        if(selectedOper != null && selectedOper.isDied)
+        if(selectedOper != null)
         {
-            OperClick(selectedOper);
+            if(selectedOper.isDied) OperInfoClose();
+
+            if (!operInfoSet.activeSelf) return;
+            if (selectedOper.sp < selectedOper.maxSp)
+            {
+                SkillGuage.rectTransform.localScale = new Vector3(1, selectedOper.sp / selectedOper.maxSp, 1);
+                selectedOperSkillIcon.color = new Color(0.3f, 0.3f, 0.3f, 1);
+            }
+            else
+            {
+                SkillGuage.rectTransform.localScale = new Vector3(1, 0, 1);
+                selectedOperSkillIcon.color = new Color(1, 1, 1, 1);
+            }
         }
     }
 
